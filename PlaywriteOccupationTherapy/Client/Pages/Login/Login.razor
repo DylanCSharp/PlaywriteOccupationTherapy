@@ -1,0 +1,39 @@
+﻿@page "/login"
+
+@inject NavigationManager navManager
+@inject HttpClient Http
+
+<AuthorizeView>
+    <Authorized>You are already logged in...</Authorized>
+    <Authorizing>
+        Authorizing...
+    </Authorizing>
+    <NotAuthorized>
+        <h5>Login Here!</h5>
+        <p class="alert-warning">@Error</p>
+        <input class="form-control" @bind-value="loginUser.Username" type="text" />
+        <br />
+        <input class="form-control" @bind-value="loginUser.Password" type="password" />
+        <br />
+        <button @onclick="LoginUser" class="btn btn-primary">Login</button>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    private LoginModel loginUser = new();
+    private string Error { get; set; }
+
+    private async Task LoginUser()
+    {
+        var response = await Http.PostAsJsonAsync("api/user/loginuser", loginUser);
+        if (response.IsSuccessStatusCode)
+        {
+            navManager.NavigateTo("/", true);
+        }
+        else
+        {
+            Error = "Invalid Credentials. Please try again!";
+        }
+    }
+}

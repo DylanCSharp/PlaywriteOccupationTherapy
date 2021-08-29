@@ -1,0 +1,10 @@
+﻿@page "/"
+
+@attribute [Authorize]
+
+<AuthorizeView>
+    <Authorized>Hello, World!</Authorized>
+    <Authorizing></Authorizing>
+    <NotAuthorized>Not Authorized</NotAuthorized>
+</AuthorizeView>
+
