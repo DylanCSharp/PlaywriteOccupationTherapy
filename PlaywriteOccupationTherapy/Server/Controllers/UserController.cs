@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using PlaywriteOccupationTherapy.Client.Shared.Models;
+using PlaywriteOccupationTherapy.Shared.Models;
 using System;
 using System.Data;
 using System.Data.SqlClient;
@@ -25,7 +26,8 @@ namespace PlaywriteOccupationTherapy.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<LoginModel>> LoginUser(LoginModel user)
+        [RequireHttps]
+        public async Task<ActionResult<LoginModel>> LoginUser([FromBody] LoginModel user)
         {
             using SqlConnection conn = new(_configuration.GetConnectionString("PlaywriteDB"));
             using SqlCommand command = new("PWD.PROC_LOGIN", conn)
@@ -33,6 +35,8 @@ namespace PlaywriteOccupationTherapy.Server.Controllers
                 CommandType = CommandType.StoredProcedure
             };
             conn.Open();
+            _ = user.Username.Trim();
+            _ = user.Password.Trim();
             command.Parameters.AddWithValue("@email", user.Username);
             command.Parameters.AddWithValue("@password", user.Password);
             int loginResult = Convert.ToInt32(command.ExecuteScalar());
@@ -51,14 +55,56 @@ namespace PlaywriteOccupationTherapy.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<LoginModel>> GetCurrentUser()
+        public async Task<ActionResult<Users>> GetCurrentUser()
         {
-            LoginModel user = new();
+            Users user = new();
             if (User.Identity.IsAuthenticated)
             {
-                user.Username = User.FindFirstValue(ClaimTypes.Name);
+                user.Email = User.FindFirstValue(ClaimTypes.Name);
+                using SqlConnection conn = new(_configuration.GetConnectionString("PlaywriteDB"));
+                using SqlCommand command = new("SELECT Id, FirstName, LastName, IsAdmin, IsSuperAdmin, IsGeneralUser FROM PWD.USERS WHERE Email = '"+user.Email+"';", conn);
+                conn.Open();
+                using SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    user.Id = (int)reader["Id"];
+                    user.FirstName = reader["FirstName"].ToString();
+                    user.LastName = reader["LastName"].ToString();
+                    user.IsAdmin = (bool?)reader["IsAdmin"];
+                    user.IsSuperAdmin = (bool?)reader["IsSuperAdmin"];
+                    user.IsGeneralUser = (bool?)reader["IsGeneralUser"];
+                }
             }
             return await Task.FromResult(user);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<RegisterModel>> RegisterUser(RegisterModel registerModel)
+        {
+            try
+            {
+                using SqlConnection conn = new(_configuration.GetConnectionString("PlaywriteDB"));
+                conn.Open();
+
+                using SqlCommand command = new("PWD.PROC_REGISTER", conn)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                command.Parameters.AddWithValue("@firstName", registerModel.FirstName);
+                command.Parameters.AddWithValue("@lastName", registerModel.LastName);
+                command.Parameters.AddWithValue("@email", registerModel.Email);
+                command.Parameters.AddWithValue("@password", registerModel.Password);
+                command.Parameters.AddWithValue("@generaluser", 1);
+                command.Parameters.AddWithValue("@admin", 0);
+                command.Parameters.AddWithValue("@superadmin", 0);
+                await command.ExecuteNonQueryAsync();
+
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
 
         [HttpGet]

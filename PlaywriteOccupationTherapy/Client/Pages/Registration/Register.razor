@@ -1,0 +1,43 @@
+﻿@page "/register"
+@inject HttpClient Http
+
+@using Syncfusion.Blazor.Notifications
+@using Syncfusion.Blazor.Inputs 
+
+
+<SfToast @ref="ToastObject">
+    <ToastPosition X="Right" Y="Top"></ToastPosition>
+</SfToast>
+<AuthorizeView>
+    <Authorized>You are already logged in...</Authorized>
+    <Authorizing>
+        Authorizing...
+    </Authorizing>
+    <NotAuthorized>
+        <h5>Register Here!</h5>
+        <SfTextBox FloatLabelType="FloatLabelType.Always" Type="InputType.Text" @bind-Value="registerModel.FirstName" Placeholder="First Name" />
+        <br />
+        <SfTextBox FloatLabelType="FloatLabelType.Always" Type="InputType.Text" @bind-Value="registerModel.LastName" Placeholder="Last Name" />
+        <br />
+        <SfTextBox FloatLabelType="FloatLabelType.Always" Type="InputType.Text" @bind-Value="registerModel.Email" Placeholder="Email Address" />
+        <br />
+        <SfTextBox FloatLabelType="FloatLabelType.Always" Type="InputType.Password" @bind-value="registerModel.Password" Placeholder="Password" />
+        <br />
+        <br />
+        <button @onclick="RegisterUser" class="btn btn-primary btn-sm"><i class="oi oi-account-login"></i>&nbsp;&nbsp;Register</button>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private RegisterModel registerModel = new();
+    private SfToast ToastObject;
+
+    private async Task RegisterUser()
+    {
+        var response = await Http.PostAsJsonAsync<RegisterModel>("api/user/registeruser", registerModel);
+        if (!response.IsSuccessStatusCode)
+        {
+            await this.ToastObject.ShowAsync(new ToastModel { Title = "Attention", Content = "Error in registering. Please try again!", CssClass = "e-toast-warning", ShowCloseButton = true });
+        }
+    }
+}

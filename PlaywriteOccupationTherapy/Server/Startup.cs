@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Syncfusion.Blazor;
 using System.Linq;
 
 namespace PlaywriteOccupationTherapy.Server
@@ -24,6 +25,7 @@ namespace PlaywriteOccupationTherapy.Server
             services.AddControllersWithViews();
             services.AddRazorPages();
             services.AddAuthentication(options => { options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme; }).AddCookie();
+            services.AddSyncfusionBlazor();
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {

@@ -7,12 +7,15 @@ namespace PlaywriteOccupationTherapy.Shared.Models
 {
     public class Users
     {
-        public int UserId { get; set; }
-        public string UserFirstName { get; set; }
-        public string UserLastName { get; set; }
-        public string UserEmail { get; set; }
-        public byte[] UserPassword { get; set; }
-        public Guid UserSalt { get; set; }
-        public DateTime UserCreatedOn { get; set; }
+        public int Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        public byte[] Password { get; set; }
+        public Guid Salt { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public bool? IsAdmin { get; set; }
+        public bool? IsSuperAdmin { get; set; }
+        public bool? IsGeneralUser { get; set; }
     }
 }
