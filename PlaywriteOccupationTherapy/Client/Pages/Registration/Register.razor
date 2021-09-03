@@ -1,5 +1,6 @@
 ﻿@page "/register"
 @inject HttpClient Http
+@inject NavigationManager navManager  
 
 @using Syncfusion.Blazor.Notifications
 @using Syncfusion.Blazor.Inputs 
@@ -34,10 +35,15 @@
 
     private async Task RegisterUser()
     {
+        //spinner to wait for delay
         var response = await Http.PostAsJsonAsync<RegisterModel>("api/user/registeruser", registerModel);
         if (!response.IsSuccessStatusCode)
         {
             await this.ToastObject.ShowAsync(new ToastModel { Title = "Attention", Content = "Error in registering. Please try again!", CssClass = "e-toast-warning", ShowCloseButton = true });
+        }
+        else
+        {
+            navManager.NavigateTo("/", true);
         }
     }
 }

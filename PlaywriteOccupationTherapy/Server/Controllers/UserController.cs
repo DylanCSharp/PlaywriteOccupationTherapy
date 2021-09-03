@@ -79,7 +79,7 @@ namespace PlaywriteOccupationTherapy.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<RegisterModel>> RegisterUser(RegisterModel registerModel)
+        public async Task<ActionResult<RegisterModel>> RegisterUser([FromBody] RegisterModel registerModel)
         {
             try
             {
@@ -97,7 +97,9 @@ namespace PlaywriteOccupationTherapy.Server.Controllers
                 command.Parameters.AddWithValue("@generaluser", 1);
                 command.Parameters.AddWithValue("@admin", 0);
                 command.Parameters.AddWithValue("@superadmin", 0);
-                await command.ExecuteNonQueryAsync();
+                command.ExecuteNonQuery();
+
+                await LoginUser(new LoginModel { Username = registerModel.Email, Password = registerModel.Password });
 
                 return Ok();
             }
