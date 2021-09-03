@@ -11,6 +11,7 @@ namespace PlaywriteOccupationTherapy.Client.Shared.Models
     public class LoginModel
     {
         [Required]
+        [EmailAddress]
         public string Username { get; set; }
 
         [Required]

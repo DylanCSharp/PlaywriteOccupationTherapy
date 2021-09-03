@@ -1,5 +1,9 @@
 ﻿@inherits LayoutComponentBase
 
+@inject NavigationManager navManager 
+
+@using Syncfusion.Blazor.Cards 
+
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -8,20 +12,37 @@
         <div class="top-row px-4">
             <AuthorizeView>
                 <Authorized>
-                    Welcome, @context.User.Identity.Name
+                    <button disabled class="btn btn-light btn-sm"><i class="oi oi-person"></i>&nbsp;&nbsp;Welcome, @context.User.Identity.Name</button>
                 </Authorized>
                 <Authorizing>
                     Authorizing...
                 </Authorizing>
                 <NotAuthorized>
-                    <button class="btn btn-primary btn-sm"><i class="oi oi-account-login"></i>&nbsp;&nbsp;Login</button>
+                    <button @onclick="NavigateLogin" class="btn btn-light btn-sm"><i class="oi oi-account-login"></i>&nbsp;&nbsp;Login</button>
                 </NotAuthorized>
             </AuthorizeView>
         </div>
         <div class="content px-4">
-            @Body
+            <SfCard ID="LayoutCard" Orientation="CardOrientation.Vertical">
+                <CardContent>
+                    @Body
+                </CardContent>
+            </SfCard>
         </div>
     </div>
 </div>
+<style>
+    #LayoutCard {
+        min-height: 90vh;
+        margin-bottom: 2vh;
+    }
+</style>
+
+@code {
+    private void NavigateLogin()
+    {
+        navManager.NavigateTo("login");
+    }
+}
 
 

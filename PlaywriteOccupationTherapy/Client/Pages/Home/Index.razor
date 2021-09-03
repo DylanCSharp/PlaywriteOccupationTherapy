@@ -7,17 +7,13 @@
 <AuthorizeView>
     <Authorized>
         Authorized
-        <br />
-        Name: @context.User.Identity.Name
-        <br />
-        General Admin: @context.User.IsInRole("GeneralAdmin")
-        <br />
-        Super Admin: @context.User.IsInRole("SuperAdmin")
-        <br />
-        General User: @context.User.IsInRole("GeneralUser")
     </Authorized>
-    <Authorizing></Authorizing>
-    <NotAuthorized>Not Authorized</NotAuthorized>
+    <Authorizing>
+        <SfSpinner Size="50" Visible="true" Type="SpinnerType.Fabric" Label="Authorizing..."></SfSpinner>
+    </Authorizing>
+    <NotAuthorized>
+        Access Denied!
+    </NotAuthorized>
 </AuthorizeView>
 
 

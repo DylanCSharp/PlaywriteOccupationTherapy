@@ -3,7 +3,8 @@
 @inject NavigationManager navManager  
 
 @using Syncfusion.Blazor.Notifications
-@using Syncfusion.Blazor.Inputs 
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Spinner  
 
 
 <SfToast @ref="ToastObject">
@@ -14,36 +15,58 @@
     <Authorizing>
         Authorizing...
     </Authorizing>
-    <NotAuthorized>
-        <h5>Register Here!</h5>
-        <SfTextBox FloatLabelType="FloatLabelType.Always" Type="InputType.Text" @bind-Value="registerModel.FirstName" Placeholder="First Name" />
-        <br />
-        <SfTextBox FloatLabelType="FloatLabelType.Always" Type="InputType.Text" @bind-Value="registerModel.LastName" Placeholder="Last Name" />
-        <br />
-        <SfTextBox FloatLabelType="FloatLabelType.Always" Type="InputType.Text" @bind-Value="registerModel.Email" Placeholder="Email Address" />
-        <br />
-        <SfTextBox FloatLabelType="FloatLabelType.Always" Type="InputType.Password" @bind-value="registerModel.Password" Placeholder="Password" />
-        <br />
-        <br />
-        <button @onclick="RegisterUser" class="btn btn-primary btn-sm"><i class="oi oi-account-login"></i>&nbsp;&nbsp;Register</button>
+    <NotAuthorized Context="authContext">
+        @if (pageVisible == false)
+        {
+        <EditForm Context="formContext" Model="registerModel" OnValidSubmit="RegisterUser">
+            <h5>Register Here!</h5>
+            <SfTextBox FloatLabelType="FloatLabelType.Always" Type="InputType.Text" @bind-Value="registerModel.FirstName" Placeholder="First Name" required />
+            <br />
+            <br />
+            <SfTextBox FloatLabelType="FloatLabelType.Always" Type="InputType.Text" @bind-Value="registerModel.LastName" Placeholder="Last Name" required />
+            <br />
+            <br />
+            <SfTextBox FloatLabelType="FloatLabelType.Always" Type="InputType.Email" @bind-Value="registerModel.Email" Placeholder="Email Address" required />
+            <br />
+            <br />
+            <SfTextBox FloatLabelType="FloatLabelType.Always" Type="InputType.Password" @bind-value="registerModel.Password" Placeholder="Password" required />
+            <br />
+            <br />
+            <small>We will not share your personal information with anyone.</small>
+            <br />
+            <br />
+            <button class="btn btn-primary btn-sm"><i class="oi oi-account-login"></i>&nbsp;&nbsp;Register</button>
+        </EditForm>
+        }
+        else if (pageVisible)
+        {
+            
+        }
     </NotAuthorized>
 </AuthorizeView>
 
 @code {
     private RegisterModel registerModel = new();
     private SfToast ToastObject;
+    private bool pageVisible = false;
 
     private async Task RegisterUser()
     {
-        //spinner to wait for delay
+        pageVisible = true;
         var response = await Http.PostAsJsonAsync<RegisterModel>("api/user/registeruser", registerModel);
-        if (!response.IsSuccessStatusCode)
-        {
-            await this.ToastObject.ShowAsync(new ToastModel { Title = "Attention", Content = "Error in registering. Please try again!", CssClass = "e-toast-warning", ShowCloseButton = true });
-        }
-        else
+        if (response.IsSuccessStatusCode)
         {
             navManager.NavigateTo("/", true);
         }
+        else if ((int)response.StatusCode == 400)
+        {
+            await this.ToastObject.ShowAsync(new ToastModel { Title = "Attention", Content = "Error in registering. Please try again!", CssClass = "e-toast-warning", ShowCloseButton = true });
+        }
+        else if ((int)response.StatusCode == 409)
+        {
+            await this.ToastObject.ShowAsync(new ToastModel { Title = "Attention", Content = "Duplicate entry attempted. Please try again using a different email!", CssClass = "e-toast-warning", ShowCloseButton = true });
+        }
+        pageVisible = false;
+        this.StateHasChanged();
     }
 }

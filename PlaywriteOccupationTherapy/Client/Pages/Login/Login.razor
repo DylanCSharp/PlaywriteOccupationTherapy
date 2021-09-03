@@ -13,14 +13,18 @@
     <Authorizing>
         Authorizing...
     </Authorizing>
-    <NotAuthorized>
-        <h5>Login Here!</h5>
-        <SfTextBox FloatLabelType="FloatLabelType.Always" Type="InputType.Text" @bind-Value="loginUser.Username" Placeholder="Email Address" />
-        <br />
-        <SfTextBox FloatLabelType="FloatLabelType.Always" Type="InputType.Password" @bind-Value="loginUser.Password" Placeholder="Password" />
-        <br />
-        <br />
-        <button @onclick="LoginUser" class="btn btn-primary btn-sm"><i class="oi oi-account-login"></i>&nbsp;&nbsp;Login</button>
+    <NotAuthorized Context="authContext">
+        <EditForm Model="loginUser" Context="formContext" OnValidSubmit="LoginUser">
+            <h5>Login Here!</h5>
+            <SfTextBox FloatLabelType="FloatLabelType.Always" Type="InputType.Email" @bind-Value="loginUser.Username" Placeholder="Email Address" required />
+            <small>We will not share your personal information with anyone.</small>
+            <br />
+            <br />
+            <SfTextBox FloatLabelType="FloatLabelType.Always" Type="InputType.Password" @bind-Value="loginUser.Password" Placeholder="Password" required/>
+            <br />
+            <br />
+            <button class="btn btn-primary btn-sm"><i class="oi oi-account-login"></i>&nbsp;&nbsp;Login</button>
+        </EditForm>
     </NotAuthorized>
 </AuthorizeView>
 
@@ -31,14 +35,19 @@
 
     private async Task LoginUser()
     {
-        var response = await Http.PostAsJsonAsync<LoginModel>("api/user/loginuser", loginUser);
-        if (response.IsSuccessStatusCode)
+        if (!string.IsNullOrEmpty(loginUser.Username) && !string.IsNullOrEmpty(loginUser.Password))
         {
-            navManager.NavigateTo("/", true);
-        }
-        else
-        {
-            await this.ToastObject.ShowAsync(new ToastModel { Title = "Attention", Content = "Invalid Credentials. Please try again!", CssClass = "e-toast-warning", ShowCloseButton = true });
+            loginUser.Username.Trim(' ');
+            loginUser.Password.Trim(' ');
+            var response = await Http.PostAsJsonAsync<LoginModel>("api/user/loginuser", loginUser);
+            if (response.IsSuccessStatusCode)
+            {
+                navManager.NavigateTo("/", true);
+            }
+            else
+            {
+                await this.ToastObject.ShowAsync(new ToastModel { Title = "Attention", Content = "Invalid Credentials. Please try again!", CssClass = "e-toast-warning", ShowCloseButton = true });
+            }
         }
     }
 }
