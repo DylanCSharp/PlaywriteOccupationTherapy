@@ -28,19 +28,10 @@
                     </NavLink>
                 </li>
                 <li class="nav-item px-3" style="cursor: pointer">
-                    <NavLink class="nav-link" Match="NavLinkMatch.All">
-                        <span class="oi oi-bookmark" aria-hidden="true"></span> Parent Portal
+                    <NavLink class="nav-link" href="portal/index"  Match="NavLinkMatch.All">
+                        <span class="oi oi-bookmark" aria-hidden="true"></span> Portal
                     </NavLink>
                 </li>
-                @if (context.User.IsInRole("GeneralAdmin"))
-                {
-                    <div class="dropdown-divider"></div>
-                    <li class="nav-item px-3" style="cursor: pointer">
-                        <NavLink class="nav-link" Match="NavLinkMatch.All">
-                            <span class="oi oi-paperclip" aria-hidden="true"></span> Admin Portal
-                        </NavLink>
-                    </li>
-                }
                 <div class="dropdown-divider"></div>
                 <li class="nav-item px-3" style="cursor: pointer">
                     <NavLink class="nav-link" Match="NavLinkMatch.All">
