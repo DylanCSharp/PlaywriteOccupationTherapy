@@ -4,7 +4,8 @@
 
 @using Syncfusion.Blazor.Notifications
 @using Syncfusion.Blazor.Inputs
-@using Syncfusion.Blazor.Spinner  
+@using Syncfusion.Blazor.Spinner
+@using Syncfusion.Blazor.Buttons
 
 
 <SfToast @ref="ToastObject">
@@ -18,25 +19,30 @@
     <NotAuthorized Context="authContext">
         @if (pageVisible == false)
         {
-        <EditForm Context="formContext" Model="registerModel" OnValidSubmit="RegisterUser">
-            <h5>Register Here!</h5>
-            <SfTextBox FloatLabelType="FloatLabelType.Always" Type="InputType.Text" @bind-Value="registerModel.FirstName" Placeholder="First Name" required />
-            <br />
-            <br />
-            <SfTextBox FloatLabelType="FloatLabelType.Always" Type="InputType.Text" @bind-Value="registerModel.LastName" Placeholder="Last Name" required />
-            <br />
-            <br />
-            <SfTextBox FloatLabelType="FloatLabelType.Always" Type="InputType.Email" @bind-Value="registerModel.Email" Placeholder="Email Address" required />
-            <br />
-            <br />
-            <SfTextBox FloatLabelType="FloatLabelType.Always" Type="InputType.Password" @bind-value="registerModel.Password" Placeholder="Password" required />
-            <br />
-            <br />
-            <small>We will not share your personal information with anyone.</small>
-            <br />
-            <br />
-            <button class="btn btn-primary btn-sm"><i class="oi oi-account-login"></i>&nbsp;&nbsp;Register</button>
-        </EditForm>
+            <div class="container-fluid" style="max-width: 60vh;">
+                <EditForm Context="formContext" Model="registerModel" OnValidSubmit="RegisterUser">
+                    <div class="form-group text-center">
+                        <div class="form-row mt-3">
+                            <SfTextBox FloatLabelType="FloatLabelType.Always" Type="InputType.Text" @bind-Value="registerModel.FirstName" Placeholder="First Name" required />
+                        </div>
+                        <div class="form-row mt-3">
+                            <SfTextBox FloatLabelType="FloatLabelType.Always" Type="InputType.Text" @bind-Value="registerModel.LastName" Placeholder="Last Name" required />
+                        </div>
+                        <div class="form-row mt-3">
+                            <SfTextBox FloatLabelType="FloatLabelType.Always" Type="InputType.Email" @bind-Value="registerModel.Email" Placeholder="Email Address" required />
+                            <div class="text-secondary">
+                                <small>We will not share your personal information with anyone.</small>
+                            </div>
+                        </div>
+                        <div class="form-row mt-3">
+                            <SfTextBox FloatLabelType="FloatLabelType.Always" Type="InputType.Password" @bind-value="registerModel.Password" Placeholder="Password" required />
+                        </div>
+                        <div class="form-row mt-2 float-lg-right float-md-right float-xl-right float-sm-right float">
+                            <SfButton class="btn btn-primary btn-sm"><i class="oi oi-account-login"></i>&nbsp;&nbsp;Register</SfButton>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
         }
         else if (pageVisible)
         {

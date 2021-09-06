@@ -9,6 +9,7 @@ using PlaywriteOccupationTherapy.Shared.Models;
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -31,6 +32,8 @@ namespace PlaywriteOccupationTherapy.Server.Controllers
         {
             try
             {
+                Stopwatch stopwatch = new();
+                stopwatch.Start();
                 using SqlConnection conn = new(_configuration.GetConnectionString("PlaywriteDB"));
                 using SqlCommand command = new("PWD.PROC_LOGIN", conn)
                 {
@@ -49,6 +52,8 @@ namespace PlaywriteOccupationTherapy.Server.Controllers
                     ClaimsIdentity claimsIdentity = new(new[] { claim }, "serverAuth");
                     ClaimsPrincipal claimsPrincipal = new(claimsIdentity);
                     await HttpContext.SignInAsync(claimsPrincipal);
+                    stopwatch.Stop();
+                    Console.WriteLine("Login time: " + stopwatch.ElapsedMilliseconds);
                     return user;
                 }
                 else

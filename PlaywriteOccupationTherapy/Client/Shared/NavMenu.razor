@@ -1,13 +1,18 @@
-﻿@using PlaywriteOccupationTherapy.Client.Shared.Authentication 
+﻿
 @inject HttpClient Http
 @inject NavigationManager navManager
-<div class="top-row pl-4 navbar navbar-dark">
-    <a class="navbar-brand" href="">Playwrite</a>
-    <button class="navbar-toggler" @onclick="ToggleNavMenu">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-</div>
 
+@using Syncfusion.Blazor.Notifications 
+
+<SfToast @ref="ToastObject">
+    <ToastPosition X="Right" Y="Top"></ToastPosition>
+</SfToast>
+<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href="">Playwrite Occ. Therapy</a>
+    <div class="navbar-toggler" style="cursor: pointer" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </div>
+</div>
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <ul class="nav flex-column">
         <li class="nav-item px-3">
@@ -17,6 +22,36 @@
         </li>
         <AuthorizeView>
             <Authorized>
+                <li class="nav-item px-3" style="cursor: pointer">
+                    <NavLink class="nav-link" Match="NavLinkMatch.All">
+                        <span class="oi oi-lightbulb" aria-hidden="true"></span> Learn Activities
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3" style="cursor: pointer">
+                    <NavLink class="nav-link" Match="NavLinkMatch.All">
+                        <span class="oi oi-bookmark" aria-hidden="true"></span> Parent Portal
+                    </NavLink>
+                </li>
+                @if (context.User.IsInRole("GeneralAdmin"))
+                {
+                    <div class="dropdown-divider"></div>
+                    <li class="nav-item px-3" style="cursor: pointer">
+                        <NavLink class="nav-link" Match="NavLinkMatch.All">
+                            <span class="oi oi-paperclip" aria-hidden="true"></span> Admin Portal
+                        </NavLink>
+                    </li>
+                }
+                <div class="dropdown-divider"></div>
+                <li class="nav-item px-3" style="cursor: pointer">
+                    <NavLink class="nav-link" Match="NavLinkMatch.All">
+                        <span class="oi oi-person" aria-hidden="true"></span> Welcome, @context.User.Identity.Name
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3" style="cursor: pointer">
+                    <NavLink class="nav-link" Match="NavLinkMatch.All">
+                        <span class="oi oi-shield" aria-hidden="true"></span> Privacy
+                    </NavLink>
+                </li>
                 <li class="nav-item px-3" style="cursor: pointer">
                     <NavLink class="nav-link" @onclick="Logout" Match="NavLinkMatch.All">
                         <span class="oi oi-account-logout" aria-hidden="true"></span> Logout
@@ -40,6 +75,9 @@
 </div>
 
 @code {
+
+    private SfToast ToastObject;
+
     private bool collapseNavMenu = true;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
@@ -51,7 +89,18 @@
 
     private async Task Logout()
     {
-        await Http.GetAsync("api/user/logoutuser");
-        navManager.NavigateTo("login", true);
+        try
+        {
+            await Http.GetAsync("api/user/logoutuser");
+            navManager.NavigateTo("login", true);
+        }
+        catch (HttpRequestException)
+        {
+            await this.ToastObject.ShowAsync(new ToastModel { Title = "Attention", Content = "Cannot log you out. Please ensure you are connected to the internet!", CssClass = "e-toast-warning", ShowCloseButton = true });
+        }
+        catch (Exception)
+        {
+
+        }
     }
 }

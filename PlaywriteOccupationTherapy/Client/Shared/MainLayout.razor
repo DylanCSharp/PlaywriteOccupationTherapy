@@ -12,13 +12,13 @@
         <div class="top-row px-4">
             <AuthorizeView>
                 <Authorized>
-                    <button disabled class="btn btn-light btn-sm"><i class="oi oi-person"></i>&nbsp;&nbsp;Welcome, @context.User.Identity.Name</button>
+                    <button class="btn btn-light btn-sm"><i class="oi oi-bell"></i></button>
                 </Authorized>
                 <Authorizing>
-                    Authorizing...
+                    
                 </Authorizing>
                 <NotAuthorized>
-                    <button @onclick="NavigateLogin" class="btn btn-light btn-sm"><i class="oi oi-account-login"></i>&nbsp;&nbsp;Login</button>
+                    <button @onclick="NavigateLogin" class="btn btn-light btn-sm"><i class="oi oi-bell"></i></button>
                 </NotAuthorized>
             </AuthorizeView>
         </div>

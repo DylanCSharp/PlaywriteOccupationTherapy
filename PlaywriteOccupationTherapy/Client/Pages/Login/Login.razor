@@ -3,7 +3,8 @@
 @inject HttpClient Http
 
 @using Syncfusion.Blazor.Notifications
-@using Syncfusion.Blazor.Inputs 
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons  
 
 <SfToast @ref="ToastObject">
     <ToastPosition X="Right" Y="Top"></ToastPosition>
@@ -14,17 +15,24 @@
         Authorizing...
     </Authorizing>
     <NotAuthorized Context="authContext">
-        <EditForm Model="loginUser" Context="formContext" OnValidSubmit="LoginUser">
-            <h5>Login Here!</h5>
-            <SfTextBox FloatLabelType="FloatLabelType.Always" Type="InputType.Email" @bind-Value="loginUser.Username" Placeholder="Email Address" required />
-            <small>We will not share your personal information with anyone.</small>
-            <br />
-            <br />
-            <SfTextBox FloatLabelType="FloatLabelType.Always" Type="InputType.Password" @bind-Value="loginUser.Password" Placeholder="Password" required/>
-            <br />
-            <br />
-            <button class="btn btn-primary btn-sm"><i class="oi oi-account-login"></i>&nbsp;&nbsp;Login</button>
-        </EditForm>
+        <div class="container-fluid" style="max-width: 60vh;">
+            <EditForm Model="loginUser" Context="formContext" OnValidSubmit="LoginUser">
+                <div class="form-group text-center">
+                    <div class="form-row mt-3">
+                        <SfTextBox FloatLabelType="FloatLabelType.Always" TabIndex="1" Type="InputType.Email" @bind-Value="loginUser.Username" Placeholder="Email Address" required />
+                        <div class="text-secondary">
+                            <small class="font-weight-light">We will not share your personal information with anyone else.</small>
+                        </div>
+                    </div>
+                    <div class="form-row mt-3">
+                        <SfTextBox FloatLabelType="FloatLabelType.Always" TabIndex="2" Type="InputType.Password" @bind-Value="loginUser.Password" Placeholder="Password" required />
+                    </div>
+                    <div class="form-row mt-2 float-lg-right float-md-right float-xl-right float-sm-right float">
+                        <SfButton><i class="oi oi-account-login"></i>&nbsp;&nbsp;Login</SfButton>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
     </NotAuthorized>
 </AuthorizeView>
 
@@ -35,19 +43,30 @@
 
     private async Task LoginUser()
     {
-        if (!string.IsNullOrEmpty(loginUser.Username) && !string.IsNullOrEmpty(loginUser.Password))
+        try
         {
-            loginUser.Username.Trim(' ');
-            loginUser.Password.Trim(' ');
-            var response = await Http.PostAsJsonAsync<LoginModel>("api/user/loginuser", loginUser);
-            if (response.IsSuccessStatusCode)
+            if (!string.IsNullOrEmpty(loginUser.Username) && !string.IsNullOrEmpty(loginUser.Password))
             {
-                navManager.NavigateTo("/", true);
+                loginUser.Username.Trim(' ');
+                loginUser.Password.Trim(' ');
+                var response = await Http.PostAsJsonAsync<LoginModel>("api/user/loginuser", loginUser);
+                if (response.IsSuccessStatusCode)
+                {
+                    navManager.NavigateTo("/", true);
+                }
+                else
+                {
+                    await this.ToastObject.ShowAsync(new ToastModel { Title = "Attention", Content = "Invalid Credentials. Please try again!", CssClass = "e-toast-warning", ShowCloseButton = true });
+                }
             }
-            else
-            {
-                await this.ToastObject.ShowAsync(new ToastModel { Title = "Attention", Content = "Invalid Credentials. Please try again!", CssClass = "e-toast-warning", ShowCloseButton = true });
-            }
+        }
+        catch (HttpRequestException)
+        {
+            await this.ToastObject.ShowAsync(new ToastModel { Title = "Attention", Content = "Cannot log you in. Please ensure you are connected to the internet!", CssClass = "e-toast-warning", ShowCloseButton = true });
+        }
+        catch (Exception ex)
+        {
+            await this.ToastObject.ShowAsync(new ToastModel { Title = "Attention", Content = $"{ex.GetType().ToString()}!", CssClass = "e-toast-warning", ShowCloseButton = true });
         }
     }
 }
